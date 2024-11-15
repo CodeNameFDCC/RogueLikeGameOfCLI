@@ -565,7 +565,7 @@ async function LearnSpells() {
       `새로운 주문 '${spellName}'을 습득했습니다!`,
       Colors.success
     );
-    await Delay(5000); // 각 주문 습득 후 지연
+    await Delay(1500); // 각 주문 습득 후 지연
   }
 }
 //#endregion
