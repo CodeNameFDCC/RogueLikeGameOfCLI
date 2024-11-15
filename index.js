@@ -1146,6 +1146,7 @@ const items = [
 async function StoreScene() {
   Clear();
   await TypeEffect("마법 상점에 입장했습니다.", Colors.info);
+  await TypeEffect(`소지 금액 ${playerState.gold} G`, Colors.info);
 
   const choices = items.map((item) => {
     return `${item.name} 구매 (${item.cost}G)`;
