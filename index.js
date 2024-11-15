@@ -573,7 +573,8 @@ async function LearnSpells() {
 async function HandleChoice(
   options,
   messages,
-  other = "올바르지 않은 선택입니다"
+  other = "올바르지 않은 선택입니다",
+  otherOption = null
 ) {
   const formattedMessages = messages
     .split(",")
@@ -588,6 +589,10 @@ async function HandleChoice(
     await options[choice]();
   } else {
     await TypeEffect(other, Colors.danger);
+    if (otherOption) {
+      await Delay(1500);
+      await otherOption();
+    }
   }
 }
 //#endregion
@@ -605,12 +610,18 @@ async function TitleScene() {
   await HandleChoice(
     {
       1: EntranceHallScene,
-      2: process.exit,
+      2: Exit,
     },
-    "입학하기,나가기"
+    "입학하기,나가기",
+    `입학하기 거부 권은 나가기 뿐입니다. ${playerState.name} 즉결 처형!`,
+    TitleScene
   );
 }
 //#endregion
+
+function Exit() {
+  process.exit;
+}
 
 //#region 상태이상 적용
 function ApplyStatusAilment(target, state) {
@@ -628,6 +639,7 @@ function ApplyStatusAilment(target, state) {
 //#region 중앙홀 씬
 async function EntranceHallScene() {
   Clear();
+  await TypeEffect(`목표 : Lv 10`, Colors.exp);
   await TypeEffect(
     `${playerState.name}님, 마법 학교의 중앙 홀입니다.`,
     Colors.success
@@ -681,8 +693,11 @@ async function OrizinScene() {
   await HandleChoice(
     {
       1: SceneSelect,
+      2: Exit,
     },
-    "이동하기, 나가기"
+    "이동하기, 나가기",
+    `다시 홀로 이동합니다.`,
+    EntranceHallScene
   );
 }
 
@@ -776,6 +791,8 @@ const effects = [
     apply: (player) => {
       let value = GetRandomRange(1, 5);
       player.stats.strength += value;
+      playerState.maxHealth += 5 * value;
+      playerState.health += 5 * value;
       return `힘이 ${value} 증가했습니다.`;
     },
   },
@@ -907,7 +924,12 @@ async function handlePlayerTurn(enemy) {
         };
         return acc;
       }, {}),
-      spellChoices
+      spellChoices,
+      "잘못된 선택으로 게임이 종료 될 수 있습니다.",
+      () => {
+        Clear();
+        handlePlayerTurn(enemy);
+      }
     );
   });
 }
@@ -1074,8 +1096,11 @@ async function TrainingGroundScene() {
   await HandleChoice(
     {
       1: async () => {
-        playerState.stats.strength += 1;
-        await TypeEffect("힘이 1 증가했습니다!", Colors.success);
+        let value = GetRandomRange(1, 3);
+        player.stats.strength += value;
+        playerState.maxHealth += 5 * value;
+        playerState.health += 5 * value;
+        await TypeEffect(`힘이 ${value} 증가했습니다!`, Colors.success);
       },
       2: async () => {
         playerState.stats.intelligence += 1;
@@ -1083,10 +1108,14 @@ async function TrainingGroundScene() {
       },
       3: async () => {
         playerState.stats.wisdom += 1;
-        await TypeEffect("지혜가 1 증가했습니다!", Colors.success);
+        await TypeEffect(
+          "아무런 효과가 없습니다. !!. 일말의 도움도 되지 않습니다.!!. 지혜가 1 증가했습니다!. 정신력이 1 증가했습니다!",
+          Colors.success
+        );
       },
     },
-    "체력 훈련,마법력 훈련,정신력 훈련"
+    "체력 훈련,마법력 훈련,정신력 훈련",
+    "의외의 선택은 아주 불편합니다!, 아무런 훈련 효과도 얻을 수 없었습니다."
   );
   await Delay(1000);
   EntranceHallScene();
@@ -1158,7 +1187,9 @@ async function StoreScene() {
       acc[item.id] = async () => await purchaseItem(item);
       return acc;
     }, {}),
-    choices.join(",")
+    choices.join(","),
+    "구매할 물건이 없었군요!!, 요즘 장사가 안되서 새로운 물건은 없어요!!",
+    EntranceHallScene
   );
 
   await Delay(1000);
