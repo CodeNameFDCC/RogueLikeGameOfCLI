@@ -614,6 +614,7 @@ async function TitleScene() {
 
 //#region 상태이상 적용
 function ApplyStatusAilment(target, state) {
+  if (GetRandomChance(50)) return;
   if (STATUS_AILMENTS[state]) {
     target.statusAilments.push({
       name: state,
