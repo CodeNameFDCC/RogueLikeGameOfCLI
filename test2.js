@@ -79,7 +79,7 @@ async function trainingScene() {
   trainingSceneLog.clear();
   trainingSceneLog.add("훈련소에 도착했습니다.");
   trainingSceneLog.add("운동을 시작 합니다!!");
-  const strength = await addpower();
+  const strength = await addStrength();
   if (5 === strength) trainingSceneLog.add("대박 입니다! 완벽해요!");
   else if (3 < strength && 5 > strength) {
     trainingSceneLog.add("성공적입니다!!");
@@ -113,13 +113,13 @@ async function libraryScene() {
   mainScene();
 }
 
-function addpower() {
+function addStrength() {
   const value = getRandomRange(0, 5);
   player.stats.힘 = value;
   return value;
 }
 
-function addintelligence() {
+function addIntelligence() {
   const value = getRandomRange(0, 5);
   player.stats.지 = value;
   return value;
