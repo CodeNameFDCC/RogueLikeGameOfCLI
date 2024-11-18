@@ -942,10 +942,11 @@ async function AttackEyeForRun(spell) {
   if (spell === "눈찌르고도망가기") {
     if (GetRandomChance(30)) {
       await TypeEffect(
-        `${spell} 를 사용하여 ${playerState.name}의 도주 성공.`,
+        `${spell} 를 사용하여 ${enemy.name}의 도주 성공.`,
         Colors.danger
       );
       await Delay(2500);
+      EntranceHallScene();
       return;
     } else {
       await TypeEffect(`${spell}를 실패했습니다.`, Colors.danger);
@@ -958,7 +959,7 @@ async function AttackEyeForRun(spell) {
 
 //스펠 선택
 async function handleSpellChoice(spell, enemy) {
-  await AttackEyeForRun(spell);
+  AttackEyeForRun(spell);
   if (playerState.mana >= SPELLS[spell].manaCost) {
     const damage = await CalculateDamage(
       Math.floor(
@@ -1096,7 +1097,7 @@ async function TrainingGroundScene() {
     {
       1: async () => {
         let value = GetRandomRange(1, 3);
-        playerState.stats.strength += value;
+        player.stats.strength += value;
         playerState.maxHealth += 5 * value;
         playerState.health += 5 * value;
         await TypeEffect(`힘이 ${value} 증가했습니다!`, Colors.success);
