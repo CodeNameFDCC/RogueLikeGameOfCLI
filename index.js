@@ -14,7 +14,7 @@ const Colors = {
 };
 
 //#endregion
-
+let outrun = false;
 //#region 타이틀
 // ASCII Art
 const titleArt = `
@@ -919,6 +919,11 @@ async function handlePlayerTurn(enemy) {
       playerState.spells.reduce((acc, spell, index) => {
         acc[index + 1] = async () => {
           await handleSpellChoice(spell, enemy);
+          if (outrun) {
+            outrun = false;
+            EntranceHallScene();
+            return;
+          }
           await UpdateHealthDisplay(playerState, enemy); // 체력 디스플레이 업데이트
           resolve(true);
         };
@@ -940,13 +945,13 @@ async function handlePlayerTurn(enemy) {
 
 async function AttackEyeForRun(spell) {
   if (spell === "눈찌르고도망가기") {
-    if (GetRandomChance(30)) {
+    if (GetRandomChance(10)) {
       await TypeEffect(
         `${spell} 를 사용하여 ${playerState.name}의 도주 성공.`,
         Colors.danger
       );
       await Delay(2500);
-      return;
+      outrun = true;
     } else {
       await TypeEffect(`${spell}를 실패했습니다.`, Colors.danger);
       await Delay(1500);
