@@ -78,10 +78,16 @@ async function trainingScene() {
   Clear();
   trainingSceneLog.clear();
   trainingSceneLog.add("훈련소에 도착했습니다.");
-  trainingSceneLog.add("힘이 강해 져요!!");
-  trainingSceneLog.add("체력이 증가 합니다!!");
+  trainingSceneLog.add("운동을 시작 합니다!!");
   const strength = await addpower();
+  if (5 === strength) trainingSceneLog.add("대박 입니다! 완벽해요!");
+  else if (3 < strength && 5 > strength) {
+    trainingSceneLog.add("성공적입니다!!");
+  } else {
+    trainingSceneLog.add("운동이 시원찮습니다.");
+  }
   trainingSceneLog.add(`힘이${strength} 만큼 증가했습니다.`);
+  player.health += 20 * strength;
   await trainingSceneLog.display();
   let name = await getEnter();
   await mainScene();
